@@ -27,6 +27,13 @@ app.use(
   router
 );
 
+app.get("/", (_req, res) => {
+  res.status(200).json({
+    success: true,
+    message: "AI LaunchPad API is running",
+  });
+});
+
 app.use(globalErrorHandler);
 
 export default app;
