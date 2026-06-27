@@ -15,6 +15,9 @@ export const env = {
   CLERK_SECRET_KEY:
     process.env.CLERK_SECRET_KEY,
 
+  CLERK_WEBHOOK_SECRET:
+    process.env.CLERK_WEBHOOK_SECRET || "",
+
   OPENAI_API_KEY:
-    process.env.OPENAI_API_KEY,
+    process.env.OPENAI_API_KEY, 
 };
