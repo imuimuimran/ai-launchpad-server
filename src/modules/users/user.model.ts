@@ -1,6 +1,7 @@
 import { Schema, model } from "mongoose";
+import { IUser } from "./user.interface";
 
-const userSchema = new Schema(
+const userSchema = new Schema<IUser>(
   {
     clerkId: {
       type: String,
@@ -19,15 +20,13 @@ const userSchema = new Schema(
       required: true,
     },
 
-    image: String,
+    image: {
+      type: String,
+    },
 
     role: {
       type: String,
-      enum: [
-        "user",
-        "manager",
-        "admin",
-      ],
+      enum: ["user", "manager", "admin"],
       default: "user",
     },
   },
@@ -36,5 +35,7 @@ const userSchema = new Schema(
   }
 );
 
-export const User =
-  model("User", userSchema);
+export const User = model<IUser>(
+  "User",
+  userSchema
+);

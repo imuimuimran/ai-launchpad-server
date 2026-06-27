@@ -20,6 +20,11 @@ app.use(hpp());
 
 app.use(mongoSanitize());
 
+app.use(
+  "/api/v1/webhooks/clerk",
+  express.raw({ type: "application/json" })
+);
+
 app.use(express.json());
 
 app.use(
