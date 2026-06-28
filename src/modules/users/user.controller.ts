@@ -4,11 +4,14 @@ import { Webhook } from "svix";
 import { env } from "../../config/env";
 import { UserService } from "./user.service";
 
+
 export const clerkWebhook = async (
   req: Request,
   res: Response
 ) => {
   try {
+    console.log("========== WEBHOOK RECEIVED ==========");
+    console.log(req.headers);
     const svixId = req.headers["svix-id"] as string;
     const svixTimestamp = req.headers["svix-timestamp"] as string;
     const svixSignature = req.headers["svix-signature"] as string;

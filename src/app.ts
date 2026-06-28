@@ -20,12 +20,28 @@ app.use(hpp());
 
 app.use(mongoSanitize());
 
+// app.use(
+//   "/api/v1/webhooks/clerk",
+//   express.raw({ type: "application/json" })
+// );
+
+// app.use(express.json());
+
+
 app.use(
   "/api/v1/webhooks/clerk",
   express.raw({ type: "application/json" })
 );
 
-app.use(express.json());
+app.use((req, res, next) => {
+  if (req.originalUrl === "/api/v1/webhooks/clerk") {
+    next();
+  } else {
+    express.json()(req, res, next);
+  }
+});
+
+
 
 app.use(
   "/api/v1",
