@@ -29,7 +29,7 @@ export const clerkWebhook = async (
     }
 
     const webhook = new Webhook(
-      env.CLERK_WEBHOOK_SECRET
+      (env.CLERK_WEBHOOK_SECRET || process.env.CLERK_WEBHOOK_SECRET) as string
     );
 
     const payload = webhook.verify(
@@ -136,6 +136,40 @@ export const getUserByClerkId = async (
       success: false,
       message: "Failed to fetch user",
       error,
+    });
+  }
+};
+
+
+
+export const getCurrentUser = async (
+  req: Request,
+  res: Response
+) => {
+  try {
+    const clerkId = req.userId!;
+
+    const user =
+      await UserService.getUserByClerkId(
+        clerkId
+      );
+
+    if (!user) {
+      return res.status(404).json({
+        success: false,
+        message: "User not found",
+      });
+    }
+
+    return res.status(200).json({
+      success: true,
+      data: user,
+    });
+  } catch (error) {
+    return res.status(500).json({
+      success: false,
+      message:
+        "Failed to fetch current user",
     });
   }
 };

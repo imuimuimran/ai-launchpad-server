@@ -4,7 +4,7 @@ import helmet from "helmet";
 import compression from "compression";
 import hpp from "hpp";
 import mongoSanitize from "express-mongo-sanitize";
-
+import { clerkMiddleware } from "@clerk/express";
 import router from "./routes";
 import { globalErrorHandler } from "./middlewares/globalErrorHandler";
 
@@ -20,13 +20,7 @@ app.use(hpp());
 
 app.use(mongoSanitize());
 
-// app.use(
-//   "/api/v1/webhooks/clerk",
-//   express.raw({ type: "application/json" })
-// );
-
-// app.use(express.json());
-
+app.use(clerkMiddleware());
 
 app.use(
   "/api/v1/webhooks/clerk",
@@ -40,8 +34,6 @@ app.use((req, res, next) => {
     express.json()(req, res, next);
   }
 });
-
-
 
 app.use(
   "/api/v1",
