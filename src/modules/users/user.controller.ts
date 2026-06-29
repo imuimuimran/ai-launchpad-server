@@ -101,3 +101,41 @@ export const clerkWebhook = async (
       });
   }
 };
+
+
+export const getUserByClerkId = async (
+  req: Request,
+  res: Response
+) => {
+  try {
+    const { clerkId } = req.params;
+
+    if (!clerkId || typeof clerkId !== "string") {
+      return res.status(400).json({
+        success: false,
+        message: "Invalid or missing Clerk ID",
+      });
+    }
+
+    const user =
+      await UserService.getUserByClerkId(clerkId);
+
+    if (!user) {
+      return res.status(404).json({
+        success: false,
+        message: "User not found",
+      });
+    }
+
+    return res.status(200).json({
+      success: true,
+      data: user,
+    });
+  } catch (error) {
+    return res.status(500).json({
+      success: false,
+      message: "Failed to fetch user",
+      error,
+    });
+  }
+};
