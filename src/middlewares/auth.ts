@@ -1,11 +1,12 @@
 import { Request, Response, NextFunction } from "express";
 import { getAuth } from "@clerk/express";
+import { UserService } from "../modules/users/user.service";
 
 interface AuthenticatedRequest extends Request {
   userId?: string;
 }
 
-export const auth = (
+export const auth = async (
   req: AuthenticatedRequest,
 //   req: Request,
   res: Response,
@@ -13,6 +14,8 @@ export const auth = (
 ) => {
 
   console.log("Authorization Header Received:", req.headers.authorization);
+  
+  try {
   const { userId } = getAuth(req);
 
   console.log("Clerk Decoded User ID:", userId);
@@ -24,7 +27,24 @@ export const auth = (
     });
   }
 
+  const user =
+      await UserService.getUserByClerkId(
+        userId
+      );
+
+    if (!user) {
+      return res.status(404).json({
+        success: false,
+        message: "User not found",
+      });
+    }
+
   req.userId = userId;
 
+  req.currentUser = user;
+
   next();
+  } catch (error) {
+    next(error);
+  }
 };

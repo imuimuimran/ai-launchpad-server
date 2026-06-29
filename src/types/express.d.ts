@@ -1,5 +1,12 @@
-declare namespace Express {
-  export interface Request {
-    userId?: string;
+import { IUser } from "../modules/users/user.interface";
+
+declare global {
+  namespace Express {
+    interface Request {
+      userId?: string;
+      currentUser?: IUser;
+    }
   }
 }
+
+export {};
