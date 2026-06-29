@@ -173,3 +173,62 @@ export const getCurrentUser = async (
     });
   }
 };
+
+
+export const updateProfile = async (
+  req: Request,
+  res: Response
+) => {
+  try {
+    const user =
+      await UserService.updateUser(
+        req.userId!,
+        req.body
+      );
+
+    res.status(200).json({
+      success: true,
+      data: user,
+    });
+  } catch (error) {
+    res.status(500).json({
+      success: false,
+      message: "Failed to update profile",
+    });
+  }
+};
+
+
+export const changeRole = async (
+  req: Request,
+  res: Response
+) => {
+  try {
+
+    const { clerkId } = req.params;
+
+    if (!clerkId || typeof clerkId !== "string") {
+      return res.status(400).json({
+        success: false,
+        message: "Invalid or missing Clerk ID",
+      });
+    }
+
+
+    const user =
+      await UserService.changeRole(
+        clerkId,
+        req.body.role
+      );
+
+    res.status(200).json({
+      success: true,
+      data: user,
+    });
+  } catch (error) {
+    res.status(500).json({
+      success: false,
+      message: "Role update failed",
+    });
+  }
+};
