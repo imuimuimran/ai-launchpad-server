@@ -19,10 +19,17 @@ const router = Router();
 |--------------------------------------------------------------------------
 */
 
+// router.post(
+//   "/webhooks/clerk",
+//   clerkWebhook
+// );
+
 router.post(
-  "/webhooks/clerk",
+  "/clerk",
   clerkWebhook
 );
+
+
 
 /*
 |--------------------------------------------------------------------------
