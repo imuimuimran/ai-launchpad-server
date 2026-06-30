@@ -25,7 +25,7 @@ const router = Router();
 // );
 
 router.post(
-  "/clerk",
+  "/webhooks/clerk",
   clerkWebhook
 );
 
