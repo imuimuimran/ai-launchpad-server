@@ -23,8 +23,6 @@ app.use(hpp());
 
 app.use(mongoSanitize());
 
-app.use(clerkMiddleware());
-
 app.use(
   "/api/v1/webhooks/clerk",
   express.raw({ type: "application/json" })
@@ -37,6 +35,8 @@ app.use((req, res, next) => {
     express.json()(req, res, next);
   }
 });
+
+app.use(clerkMiddleware());
 
 app.use(
   "/api/v1",
