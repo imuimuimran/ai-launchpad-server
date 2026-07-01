@@ -32,6 +32,8 @@ export const clerkWebhook = async (
       (env.CLERK_WEBHOOK_SECRET || process.env.CLERK_WEBHOOK_SECRET) as string
     );
 
+    console.log("Body type:", typeof req.body);
+    console.log("Is Buffer:", Buffer.isBuffer(req.body));
     const payload = webhook.verify(
       req.body,
       {
@@ -51,9 +53,8 @@ export const clerkWebhook = async (
           email:
             data.email_addresses[0]
               .email_address,
-          name: `${data.first_name ?? ""} ${
-            data.last_name ?? ""
-          }`.trim(),
+          name: `${data.first_name ?? ""} ${data.last_name ?? ""
+            }`.trim(),
           image: data.image_url,
           role: "user",
         });
@@ -67,9 +68,8 @@ export const clerkWebhook = async (
             email:
               data.email_addresses[0]
                 .email_address,
-            name: `${data.first_name ?? ""} ${
-              data.last_name ?? ""
-            }`.trim(),
+            name: `${data.first_name ?? ""} ${data.last_name ?? ""
+              }`.trim(),
             image: data.image_url,
           }
         );
@@ -90,15 +90,19 @@ export const clerkWebhook = async (
         success: true,
       });
   } catch (error) {
-    console.error(error);
+    console.error("========== WEBHOOK ERROR ==========");
 
-    return res
-      .status(400)
-      .json({
-        success: false,
-        message:
-          "Webhook verification failed",
-      });
+    if (error instanceof Error) {
+      console.error(error.message);
+      console.error(error.stack);
+    } else {
+      console.error(error);
+    }
+
+    return res.status(400).json({
+      success: false,
+      message: "Webhook verification failed",
+    });
   }
 };
 
