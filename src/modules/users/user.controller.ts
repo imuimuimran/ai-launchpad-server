@@ -4,7 +4,6 @@ import { Webhook } from "svix";
 import { env } from "../../config/env";
 import { UserService } from "./user.service";
 
-
 export const clerkWebhook = async (
   req: Request,
   res: Response
@@ -32,8 +31,6 @@ export const clerkWebhook = async (
       (env.CLERK_WEBHOOK_SECRET || process.env.CLERK_WEBHOOK_SECRET) as string
     );
 
-    console.log("Body type:", typeof req.body);
-    console.log("Is Buffer:", Buffer.isBuffer(req.body));
     const payload = webhook.verify(
       req.body,
       {
@@ -47,40 +44,44 @@ export const clerkWebhook = async (
     const data = payload.data;
 
     switch (eventType) {
-      case "user.created":
+      case "user.created": {
+        // Improved Name Fallback Logic 🎯
+        const fullName = `${data.first_name ?? ""} ${data.last_name ?? ""}`.trim();
+
         await UserService.createUser({
           clerkId: data.id,
-          email:
-            data.email_addresses[0]
-              .email_address,
-          name: `${data.first_name ?? ""} ${data.last_name ?? ""
-            }`.trim(),
+          email: data.email_addresses?.[0]?.email_address ?? "",
+          name:
+            fullName ||
+            data.username ||
+            data.email_addresses?.[0]?.email_address ||
+            "Unknown User",
           image: data.image_url,
           role: "user",
         });
-
         break;
+      }
 
-      case "user.updated":
-        await UserService.updateUser(
-          data.id,
-          {
-            email:
-              data.email_addresses[0]
-                .email_address,
-            name: `${data.first_name ?? ""} ${data.last_name ?? ""
-              }`.trim(),
-            image: data.image_url,
-          }
-        );
+      case "user.updated": {
+        // Improved Name Fallback Logic 🎯
+        const fullName = `${data.first_name ?? ""} ${data.last_name ?? ""}`.trim();
 
+        await UserService.updateUser(data.id, {
+          email: data.email_addresses?.[0]?.email_address ?? "",
+          name:
+            fullName ||
+            data.username ||
+            data.email_addresses?.[0]?.email_address ||
+            "Unknown User",
+          image: data.image_url,
+        });
         break;
+      }
 
       case "user.deleted":
         await UserService.deleteUser(
           data.id
         );
-
         break;
     }
 
@@ -90,18 +91,21 @@ export const clerkWebhook = async (
         success: true,
       });
   } catch (error) {
+    // Improved Error Messaging Block 🛠️
     console.error("========== WEBHOOK ERROR ==========");
 
     if (error instanceof Error) {
       console.error(error.message);
-      console.error(error.stack);
-    } else {
-      console.error(error);
+
+      return res.status(400).json({
+        success: false,
+        message: error.message,
+      });
     }
 
     return res.status(400).json({
       success: false,
-      message: "Webhook verification failed",
+      message: "Unknown webhook error",
     });
   }
 };
@@ -208,7 +212,6 @@ export const changeRole = async (
   res: Response
 ) => {
   try {
-
     const { clerkId } = req.params;
 
     if (!clerkId || typeof clerkId !== "string") {
@@ -217,7 +220,6 @@ export const changeRole = async (
         message: "Invalid or missing Clerk ID",
       });
     }
-
 
     const user =
       await UserService.changeRole(
